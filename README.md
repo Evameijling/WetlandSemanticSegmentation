@@ -9,6 +9,9 @@ The research focuses on:
 - 🔍 **Impact of image resolution on classification performance**.
 - ⚙️ **Automated data preprocessing and segmentation pipeline** for high-resolution satellite imagery.
 
+## 📄 Thesis
+You can find the full thesis document [here](MSc_Thesis.pdf).
+
 ## 📂 Code Structure
 This repository is a **restructured version** of my original research code, reorganized for clarity. Some file paths and references might differ from the original; however, with minor adjustments, all scripts remain fully functional on any system. **Note:** Ensure that file paths in the commands match your directory structure. You may need to adjust paths based on your local setup.
 
