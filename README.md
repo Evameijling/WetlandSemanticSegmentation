@@ -10,7 +10,7 @@ The research focuses on:
 - ⚙️ **Automated data preprocessing and segmentation pipeline** for high-resolution satellite imagery.
 
 ## 📂 Code Structure
-This repository is a **restructured version** of my original research code, reorganized for clarity. Some file paths and references might differ from the original; however, with minor adjustments, all scripts remain fully functional on any system.
+This repository is a **restructured version** of my original research code, reorganized for clarity. Some file paths and references might differ from the original; however, with minor adjustments, all scripts remain fully functional on any system. **Note:** Ensure that file paths in the commands match your directory structure. You may need to adjust paths based on your local setup.
 
 ## 🛠 Installation & Usage
 
@@ -38,10 +38,9 @@ pip install -r requirements_GEE.txt
 
 ### 1. Baseline U-Net Experiment (Medium Resolution)
 #### Download Data:
-Download Sentinel-2 data and corresponding labels from the Sentinel-2 data portal.
+[Download](https://drive.google.com/drive/folders/1gETPmb8uniyRd0q6pjHlkyOxX0KEOuOA?usp=share_link) Sentinel-2 data and corresponding Dynamic World labels. 
 #### Preprocess Data:
-Run the preprocessing scripts in the following order (located in `srs/dataset/medium_resolution/wetlands`):
-*(Scripts are expected to be executed in the given order as per the repository instructions.)*
+The preprocessing scripts in `srs/dataset/medium_resolution/wetlands` should be run in the given order.
 #### Train the Baseline U-Net Model:
 Execute the following command to run the baseline U-Net experiment:
 ```bash
@@ -56,10 +55,11 @@ Download Sentinel-2 data and labels from the Sentinel-2 data portal.
 ##### Preprocess Data:
 Run the preprocessing scripts in order (located in `srs/dataset/medium_resolution/wetlands`).
 ##### Pretrain the Autoencoder:
-Save weights for U-Net using:
+Execute:
 ```bash
 python srs/training/medium_resolution/wetlands/train_autoencoder_save_weights_for_unet_loss_16bit_mixedloss.py
 ```
+**Note:** After training the autoencoder, make sure to update the path to the saved weights in the pretrained U-Net script before running it.
 ##### Train U-Net Models:
 **Non-pretrained U-Net:**
 ```bash
@@ -73,7 +73,7 @@ Both scripts output training and validation metrics per epoch and final test met
 
 #### On Very-High Resolution Data
 ##### Download Data:
-Download VHR data and labels from satellietdataportaal.
+Download VHR data and labels from [Satellietdataportaal](https://viewer.satellietdataportaal.nl/@52.06262,4.691162,8).
 ##### Preprocess Data:
 Run the preprocessing scripts in order (located in `srs/dataset/high_resolution`).
 ##### Pretrain the Autoencoder:
@@ -81,6 +81,7 @@ Execute:
 ```bash
 python srs/training/high_resolution/train_autoencoder_save_weights_for_unet_loss_16bit_mixedloss.py
 ```
+**Note:** After training the autoencoder, make sure to update the path to the saved weights in the pretrained U-Net script before running it.
 ##### Train U-Net Models:
 **Non-pretrained U-Net:**
 ```bash
@@ -95,9 +96,9 @@ Similar to the medium-resolution case, these scripts log metrics per epoch and d
 ### 3. Experiment 2: Dependency on Resolution
 #### Medium-Resolution Data (Wetlands Focus)
 ##### Download Data:
-Download Sentinel-2 data and labels from the Sentinel-2 data portal.
+[Download](https://drive.google.com/drive/folders/1gETPmb8uniyRd0q6pjHlkyOxX0KEOuOA?usp=share_link) Sentinel-2 data and VHR labels for the Biesbosch area (manually annotated VHR labels).
 ##### Preprocess Data:
-Run the preprocessing scripts located in `srs/dataset/medium_resolution/biesbosch`. This process focuses solely on wetlands and involves downsampling the corresponding high-resolution labels.
+Run the preprocessing scripts located in `srs/dataset/medium_resolution/biesbosch`. This process focuses solely on the Biesbosch area and involves downsampling the corresponding high-resolution labels.
 ##### Train U-Net Models:
 **Non-pretrained U-Net:**
 ```bash
@@ -134,4 +135,3 @@ If you use this repository in your research, please cite it using the following 
 
 ## 📧 Contact
 For questions or collaborations, please open an issue on GitHub or contact me directly.
-EOF
