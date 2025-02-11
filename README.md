@@ -116,7 +116,7 @@ Follow the same procedure as described in **Experiment 1: On Very-High Resolutio
 ### Utilities:
 Scripts in `srs/utils` help manage files and evaluate satellite and mask files.
 ### Models:
-The `srs/models` directory contains model definitions used in the experiments.
+The `srs/models` directory contains model definitions used in the experiments. It includes the model with 4 encoder and 4 decoder blocks as explained in the paper, but also contains models with varying depths (both deeper and shallower) to test the effect of model depth on performance.
 ### Evaluation:
 Use the script in `srs/evaluation` to run inference on U-Net given the model weights.
 

@@ -326,190 +326,190 @@ def calculate_ssim(img1, img2):
 
 ############################# TRAINING ################################
 
-# # Training loop
-# best_val_accuracy = 0.0
-# for epoch in range(EPOCHS):
-#     autoencoder.train()
-#     running_loss = 0.0
-#     running_huber_loss = 0.0
-#     running_ssim_loss = 0.0
-#     running_edge_loss = 0.0
-#     running_acc = 0.0
-#     running_psnr = 0.0
-#     running_ssim = 0.0
+# Training loop
+best_val_accuracy = 0.0
+for epoch in range(EPOCHS):
+    autoencoder.train()
+    running_loss = 0.0
+    running_huber_loss = 0.0
+    running_ssim_loss = 0.0
+    running_edge_loss = 0.0
+    running_acc = 0.0
+    running_psnr = 0.0
+    running_ssim = 0.0
 
-#     for images in tqdm(train_loader):
-#         images = images.to(device)
-#         optimizer.zero_grad()
-#         outputs = autoencoder(images)
+    for images in tqdm(train_loader):
+        images = images.to(device)
+        optimizer.zero_grad()
+        outputs = autoencoder(images)
 
-#         # Compute the MultiLoss components
-#         loss, loss_huber, loss_ssim, loss_edge = criterion(outputs, images)
-#         loss.backward()
-#         optimizer.step()
+        # Compute the MultiLoss components
+        loss, loss_huber, loss_ssim, loss_edge = criterion(outputs, images)
+        loss.backward()
+        optimizer.step()
 
-#         # Track all loss components
-#         running_loss += loss.item() * images.size(0)
-#         running_huber_loss += loss_huber.item() * images.size(0)
-#         running_ssim_loss += loss_ssim.item() * images.size(0)
-#         running_edge_loss += loss_edge.item() * images.size(0)
+        # Track all loss components
+        running_loss += loss.item() * images.size(0)
+        running_huber_loss += loss_huber.item() * images.size(0)
+        running_ssim_loss += loss_ssim.item() * images.size(0)
+        running_edge_loss += loss_edge.item() * images.size(0)
 
-#         # Track accuracy (band-wise)
-#         running_acc += calculate_accuracy_bandwise(outputs, images) * images.size(0)
+        # Track accuracy (band-wise)
+        running_acc += calculate_accuracy_bandwise(outputs, images) * images.size(0)
 
-#         # Track PSNR and SSIM
-#         running_psnr += calculate_psnr(outputs, images).item() * images.size(0)
-#         running_ssim += calculate_ssim(outputs, images).mean().item() * images.size(0)
+        # Track PSNR and SSIM
+        running_psnr += calculate_psnr(outputs, images).item() * images.size(0)
+        running_ssim += calculate_ssim(outputs, images).mean().item() * images.size(0)
 
-#     # Calculate average metrics for the epoch
-#     epoch_loss = running_loss / len(train_loader.dataset)
-#     epoch_huber_loss = running_huber_loss / len(train_loader.dataset)
-#     epoch_ssim_loss = running_ssim_loss / len(train_loader.dataset)
-#     epoch_edge_loss = running_edge_loss / len(train_loader.dataset)
-#     epoch_acc = running_acc / len(train_loader.dataset)
-#     epoch_psnr = running_psnr / len(train_loader.dataset)
-#     epoch_ssim = running_ssim / len(train_loader.dataset)
+    # Calculate average metrics for the epoch
+    epoch_loss = running_loss / len(train_loader.dataset)
+    epoch_huber_loss = running_huber_loss / len(train_loader.dataset)
+    epoch_ssim_loss = running_ssim_loss / len(train_loader.dataset)
+    epoch_edge_loss = running_edge_loss / len(train_loader.dataset)
+    epoch_acc = running_acc / len(train_loader.dataset)
+    epoch_psnr = running_psnr / len(train_loader.dataset)
+    epoch_ssim = running_ssim / len(train_loader.dataset)
 
-#     print(f'Epoch [{epoch + 1}/{EPOCHS}], Loss: {epoch_loss:.4f}, Huber: {epoch_huber_loss:.4f}, '
-#           f'SSIM: {epoch_ssim_loss:.4f}, Edge: {epoch_edge_loss:.4f}, Accuracy: {epoch_acc:.4f}, PSNR: {epoch_psnr:.4f}, SSIM: {epoch_ssim:.4f}')
+    print(f'Epoch [{epoch + 1}/{EPOCHS}], Loss: {epoch_loss:.4f}, Huber: {epoch_huber_loss:.4f}, '
+          f'SSIM: {epoch_ssim_loss:.4f}, Edge: {epoch_edge_loss:.4f}, Accuracy: {epoch_acc:.4f}, PSNR: {epoch_psnr:.4f}, SSIM: {epoch_ssim:.4f}')
 
-#     # Log training metrics to TensorBoard
-#     writer.add_scalar('Loss/train', epoch_loss, epoch)
-#     writer.add_scalar('Loss/train_huber', epoch_huber_loss, epoch)
-#     writer.add_scalar('Loss/train_ssim', epoch_ssim_loss, epoch)
-#     writer.add_scalar('Loss/train_edge', epoch_edge_loss, epoch)
-#     writer.add_scalar('Accuracy/train', epoch_acc, epoch)
-#     writer.add_scalar('PSNR/train', epoch_psnr, epoch)
-#     writer.add_scalar('SSIM/train', epoch_ssim, epoch)
+    # Log training metrics to TensorBoard
+    writer.add_scalar('Loss/train', epoch_loss, epoch)
+    writer.add_scalar('Loss/train_huber', epoch_huber_loss, epoch)
+    writer.add_scalar('Loss/train_ssim', epoch_ssim_loss, epoch)
+    writer.add_scalar('Loss/train_edge', epoch_edge_loss, epoch)
+    writer.add_scalar('Accuracy/train', epoch_acc, epoch)
+    writer.add_scalar('PSNR/train', epoch_psnr, epoch)
+    writer.add_scalar('SSIM/train', epoch_ssim, epoch)
 
-#     ############################# VALIDATION ################################
+    ############################# VALIDATION ################################
 
-#     # Validation phase
-#     autoencoder.eval()
-#     val_loss = 0.0
-#     val_huber_loss = 0.0
-#     val_ssim_loss = 0.0
-#     val_edge_loss = 0.0
-#     val_acc = 0.0
-#     val_psnr = 0.0
-#     val_ssim = 0.0
+    # Validation phase
+    autoencoder.eval()
+    val_loss = 0.0
+    val_huber_loss = 0.0
+    val_ssim_loss = 0.0
+    val_edge_loss = 0.0
+    val_acc = 0.0
+    val_psnr = 0.0
+    val_ssim = 0.0
 
-#     with torch.no_grad():
-#         for images in tqdm(val_loader):
-#             images = images.to(device)
-#             outputs = autoencoder(images)
+    with torch.no_grad():
+        for images in tqdm(val_loader):
+            images = images.to(device)
+            outputs = autoencoder(images)
 
-#             # Compute the MultiLoss components for validation
-#             loss, loss_huber, loss_ssim, loss_edge = criterion(outputs, images)
+            # Compute the MultiLoss components for validation
+            loss, loss_huber, loss_ssim, loss_edge = criterion(outputs, images)
 
-#             val_loss += loss.item() * images.size(0)
-#             val_huber_loss += loss_huber.item() * images.size(0)
-#             val_ssim_loss += loss_ssim.item() * images.size(0)
-#             val_edge_loss += loss_edge.item() * images.size(0)
-#             val_acc += calculate_accuracy_bandwise(outputs, images) * images.size(0)
-#             val_psnr += calculate_psnr(outputs, images).item() * images.size(0)
-#             val_ssim += calculate_ssim(outputs, images).mean().item() * images.size(0)
+            val_loss += loss.item() * images.size(0)
+            val_huber_loss += loss_huber.item() * images.size(0)
+            val_ssim_loss += loss_ssim.item() * images.size(0)
+            val_edge_loss += loss_edge.item() * images.size(0)
+            val_acc += calculate_accuracy_bandwise(outputs, images) * images.size(0)
+            val_psnr += calculate_psnr(outputs, images).item() * images.size(0)
+            val_ssim += calculate_ssim(outputs, images).mean().item() * images.size(0)
 
-#     # Calculate average metrics for validation
-#     val_loss /= len(val_loader.dataset)
-#     val_huber_loss /= len(val_loader.dataset)
-#     val_ssim_loss /= len(val_loader.dataset)
-#     val_edge_loss /= len(val_loader.dataset)
-#     val_acc /= len(val_loader.dataset)
-#     val_psnr /= len(val_loader.dataset)
-#     val_ssim /= len(val_loader.dataset)
+    # Calculate average metrics for validation
+    val_loss /= len(val_loader.dataset)
+    val_huber_loss /= len(val_loader.dataset)
+    val_ssim_loss /= len(val_loader.dataset)
+    val_edge_loss /= len(val_loader.dataset)
+    val_acc /= len(val_loader.dataset)
+    val_psnr /= len(val_loader.dataset)
+    val_ssim /= len(val_loader.dataset)
 
-#     print(f'Epoch [{epoch + 1}/{EPOCHS}], Validation Loss: {val_loss:.4f}, Validation Huber: {val_huber_loss:.4f}, '
-#           f'Validation SSIM: {val_ssim_loss:.4f}, Validation Edge: {val_edge_loss:.4f}, Validation Accuracy: {val_acc:.4f}, Validation PSNR: {val_psnr:.4f}, Validation SSIM: {val_ssim:.4f}')
+    print(f'Epoch [{epoch + 1}/{EPOCHS}], Validation Loss: {val_loss:.4f}, Validation Huber: {val_huber_loss:.4f}, '
+          f'Validation SSIM: {val_ssim_loss:.4f}, Validation Edge: {val_edge_loss:.4f}, Validation Accuracy: {val_acc:.4f}, Validation PSNR: {val_psnr:.4f}, Validation SSIM: {val_ssim:.4f}')
 
-#     # Log validation metrics to TensorBoard
-#     writer.add_scalar('Loss/val', val_loss, epoch)
-#     writer.add_scalar('Loss/val_huber', val_huber_loss, epoch)
-#     writer.add_scalar('Loss/val_ssim', val_ssim_loss, epoch)
-#     writer.add_scalar('Loss/val_edge', val_edge_loss, epoch)
-#     writer.add_scalar('Accuracy/val', val_acc, epoch)
-#     writer.add_scalar('PSNR/val', val_psnr, epoch)
-#     writer.add_scalar('SSIM/val', val_ssim, epoch)
+    # Log validation metrics to TensorBoard
+    writer.add_scalar('Loss/val', val_loss, epoch)
+    writer.add_scalar('Loss/val_huber', val_huber_loss, epoch)
+    writer.add_scalar('Loss/val_ssim', val_ssim_loss, epoch)
+    writer.add_scalar('Loss/val_edge', val_edge_loss, epoch)
+    writer.add_scalar('Accuracy/val', val_acc, epoch)
+    writer.add_scalar('PSNR/val', val_psnr, epoch)
+    writer.add_scalar('SSIM/val', val_ssim, epoch)
 
-#     # Save the best model based on validation accuracy
-#     if val_acc > best_val_accuracy:
-#         best_val_accuracy = val_acc
-#         best_model_path = os.path.join(models_dir, 'best_autoencoder.pth')
-#         torch.save(autoencoder.state_dict(), best_model_path)
-#         print(f"Best model saved with validation accuracy: {best_val_accuracy:.4f}")
+    # Save the best model based on validation accuracy
+    if val_acc > best_val_accuracy:
+        best_val_accuracy = val_acc
+        best_model_path = os.path.join(models_dir, 'best_autoencoder.pth')
+        torch.save(autoencoder.state_dict(), best_model_path)
+        print(f"Best model saved with validation accuracy: {best_val_accuracy:.4f}")
 
-# # # Save the final autoencoder model
-# # final_autoencoder_model_path = os.path.join(models_dir, f'final_autoencoder.pth')
-# # torch.save(autoencoder.state_dict(), final_autoencoder_model_path)
-# # print(f"Final autoencoder model saved to {final_autoencoder_model_path}")
-
-# ############################# TESTING #############################
-
-# # # Load the last saved model
-# # autoencoder.load_state_dict(torch.load(final_autoencoder_model_path))
-# # autoencoder.eval()
-
-#     # Initialize metrics for test set
-#     test_loss = 0.0
-#     test_huber_loss = 0.0
-#     test_ssim_loss = 0.0
-#     test_edge_loss = 0.0
-#     test_acc = 0.0
-#     test_psnr = 0.0
-#     test_ssim_value = 0.0
-
-#     with torch.no_grad():
-#         for images in tqdm(test_loader, desc="Testing"):
-#             images = images.to(device)
-#             outputs = autoencoder(images)
-
-#             # Compute the MultiLoss components for the test set
-#             loss, loss_huber, loss_ssim, loss_edge = criterion(outputs, images)
-
-#             test_loss += loss.item() * images.size(0)
-#             test_huber_loss += loss_huber.item() * images.size(0)
-#             test_ssim_loss += loss_ssim.item() * images.size(0)
-#             test_edge_loss += loss_edge.item() * images.size(0)
-#             test_acc += calculate_accuracy_bandwise(outputs, images) * images.size(0)
-#             test_psnr += calculate_psnr(outputs, images).item() * images.size(0)
-#             test_ssim_value += calculate_ssim(outputs, images).mean().item() * images.size(0)
-
-#     # Calculate average metrics for the test set
-#     test_loss /= len(test_loader.dataset)
-#     test_huber_loss /= len(test_loader.dataset)
-#     test_ssim_loss /= len(test_loader.dataset)
-#     test_edge_loss /= len(test_loader.dataset)
-#     test_acc /= len(test_loader.dataset)
-#     test_psnr /= len(test_loader.dataset)
-#     test_ssim_value /= len(test_loader.dataset)
-
-#     print(f'Epoch [{epoch + 1}/{EPOCHS}], Test Loss: {test_loss:.4f}, Test Huber: {test_huber_loss:.4f}, '
-#           f'Test SSIM: {test_ssim_loss:.4f}, Test Edge: {test_edge_loss:.4f}, '
-#           f'Test Accuracy: {test_acc:.4f}, Test PSNR: {test_psnr:.4f}, Test SSIM: {test_ssim_value:.4f}')
-
-#     # Log the test metrics to TensorBoard
-#     writer.add_scalar('Loss/test', test_loss, epoch)
-#     writer.add_scalar('Loss/test_huber', test_huber_loss, epoch)
-#     writer.add_scalar('Loss/test_ssim', test_ssim_loss, epoch)
-#     writer.add_scalar('Loss/test_edge', test_edge_loss, epoch)
-#     writer.add_scalar('Accuracy/test', test_acc, epoch)
-#     writer.add_scalar('PSNR/test', test_psnr, epoch)
-#     writer.add_scalar('SSIM/test', test_ssim_value, epoch)
-
-# # Save the final autoencoder model after training completes
+# # Save the final autoencoder model
 # final_autoencoder_model_path = os.path.join(models_dir, f'final_autoencoder.pth')
 # torch.save(autoencoder.state_dict(), final_autoencoder_model_path)
 # print(f"Final autoencoder model saved to {final_autoencoder_model_path}")
 
-# # Close the TensorBoard writer
-# writer.close()
+############################# TESTING #############################
+
+# # Load the last saved model
+# autoencoder.load_state_dict(torch.load(final_autoencoder_model_path))
+# autoencoder.eval()
+
+    # Initialize metrics for test set
+    test_loss = 0.0
+    test_huber_loss = 0.0
+    test_ssim_loss = 0.0
+    test_edge_loss = 0.0
+    test_acc = 0.0
+    test_psnr = 0.0
+    test_ssim_value = 0.0
+
+    with torch.no_grad():
+        for images in tqdm(test_loader, desc="Testing"):
+            images = images.to(device)
+            outputs = autoencoder(images)
+
+            # Compute the MultiLoss components for the test set
+            loss, loss_huber, loss_ssim, loss_edge = criterion(outputs, images)
+
+            test_loss += loss.item() * images.size(0)
+            test_huber_loss += loss_huber.item() * images.size(0)
+            test_ssim_loss += loss_ssim.item() * images.size(0)
+            test_edge_loss += loss_edge.item() * images.size(0)
+            test_acc += calculate_accuracy_bandwise(outputs, images) * images.size(0)
+            test_psnr += calculate_psnr(outputs, images).item() * images.size(0)
+            test_ssim_value += calculate_ssim(outputs, images).mean().item() * images.size(0)
+
+    # Calculate average metrics for the test set
+    test_loss /= len(test_loader.dataset)
+    test_huber_loss /= len(test_loader.dataset)
+    test_ssim_loss /= len(test_loader.dataset)
+    test_edge_loss /= len(test_loader.dataset)
+    test_acc /= len(test_loader.dataset)
+    test_psnr /= len(test_loader.dataset)
+    test_ssim_value /= len(test_loader.dataset)
+
+    print(f'Epoch [{epoch + 1}/{EPOCHS}], Test Loss: {test_loss:.4f}, Test Huber: {test_huber_loss:.4f}, '
+          f'Test SSIM: {test_ssim_loss:.4f}, Test Edge: {test_edge_loss:.4f}, '
+          f'Test Accuracy: {test_acc:.4f}, Test PSNR: {test_psnr:.4f}, Test SSIM: {test_ssim_value:.4f}')
+
+    # Log the test metrics to TensorBoard
+    writer.add_scalar('Loss/test', test_loss, epoch)
+    writer.add_scalar('Loss/test_huber', test_huber_loss, epoch)
+    writer.add_scalar('Loss/test_ssim', test_ssim_loss, epoch)
+    writer.add_scalar('Loss/test_edge', test_edge_loss, epoch)
+    writer.add_scalar('Accuracy/test', test_acc, epoch)
+    writer.add_scalar('PSNR/test', test_psnr, epoch)
+    writer.add_scalar('SSIM/test', test_ssim_value, epoch)
+
+# Save the final autoencoder model after training completes
+final_autoencoder_model_path = os.path.join(models_dir, f'final_autoencoder.pth')
+torch.save(autoencoder.state_dict(), final_autoencoder_model_path)
+print(f"Final autoencoder model saved to {final_autoencoder_model_path}")
+
+# Close the TensorBoard writer
+writer.close()
 
 ############################# VISUALIZATION #############################
 
 # # Define best_model_path if not already defined
 # best_model_path = os.path.join(models_dir, 'best_autoencoder.pth')
 
-final_autoencoder_model_path = "/home/egmelich/SatelliteMAE/Autoencoder_Unet_Satellietdataportaal/models/final_autoencoder.pth"
+# final_autoencoder_model_path = "/home/egmelich/SatelliteMAE/Autoencoder_Unet_Satellietdataportaal/models/final_autoencoder.pth"
 
 # Load the autoencoder model
 autoencoder.load_state_dict(torch.load(final_autoencoder_model_path, weights_only=True))

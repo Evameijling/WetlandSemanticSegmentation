@@ -413,189 +413,189 @@ def test_model_in_memory(model, device, test_loader, criterion, epoch):
 
 ############################# TRAINING ################################
 
-# # Initialize variables for model checkpointing
-# best_val_loss = float('inf')
-# # Training loop
-# for epoch in range(EPOCHS):
-#     unet.train()
-#     running_loss = 0.0
-#     running_dice_meter.reset()
-#     running_iou_meter.reset()
-#     running_precision_meter.reset()
-#     running_recall_meter.reset()
-#     running_f1_meter.reset()
-#     running_corrects = 0
-#     total_pixels = 0
+# Initialize variables for model checkpointing
+best_val_loss = float('inf')
+# Training loop
+for epoch in range(EPOCHS):
+    unet.train()
+    running_loss = 0.0
+    running_dice_meter.reset()
+    running_iou_meter.reset()
+    running_precision_meter.reset()
+    running_recall_meter.reset()
+    running_f1_meter.reset()
+    running_corrects = 0
+    total_pixels = 0
 
-#     for images, masks in tqdm(train_loader, desc=f"Training Epoch {epoch+1}"):
-#         images = images.to(device)
-#         masks = masks.to(device)
+    for images, masks in tqdm(train_loader, desc=f"Training Epoch {epoch+1}"):
+        images = images.to(device)
+        masks = masks.to(device)
         
-#         # Ensure the target masks contain only valid class indices
-#         if masks.max() >= NUM_CLASSES or masks.min() < 0:
-#             raise ValueError(f"Target mask contains invalid class indices: {masks.unique().tolist()}")
+        # Ensure the target masks contain only valid class indices
+        if masks.max() >= NUM_CLASSES or masks.min() < 0:
+            raise ValueError(f"Target mask contains invalid class indices: {masks.unique().tolist()}")
 
-#         optimizer.zero_grad()
-#         outputs = unet(images)
+        optimizer.zero_grad()
+        outputs = unet(images)
         
-#         # Ensure the output shape is [batch_size, num_classes, height, width]
-#         if outputs.shape[1] != NUM_CLASSES:
-#             raise ValueError(f"Expected output shape [batch_size, {NUM_CLASSES}, height, width], but got {outputs.shape}")
+        # Ensure the output shape is [batch_size, num_classes, height, width]
+        if outputs.shape[1] != NUM_CLASSES:
+            raise ValueError(f"Expected output shape [batch_size, {NUM_CLASSES}, height, width], but got {outputs.shape}")
 
-#         loss = criterion(outputs, masks)
-#         loss.backward()
-#         optimizer.step()
-#         running_loss += loss.item() * images.size(0)
+        loss = criterion(outputs, masks)
+        loss.backward()
+        optimizer.step()
+        running_loss += loss.item() * images.size(0)
 
-#         # Calculate accuracy
-#         preds = outputs.detach().cpu().numpy()
-#         masks_np = masks.detach().cpu().numpy()
-#         running_corrects += (np.argmax(preds, axis=1) == masks_np).sum()
-#         total_pixels += masks_np.size
+        # Calculate accuracy
+        preds = outputs.detach().cpu().numpy()
+        masks_np = masks.detach().cpu().numpy()
+        running_corrects += (np.argmax(preds, axis=1) == masks_np).sum()
+        total_pixels += masks_np.size
         
-#         # Calculate metrics
-#         dice_acc = dice_fn(outputs, masks)
-#         iou_acc = iou_fn(outputs, masks)
+        # Calculate metrics
+        dice_acc = dice_fn(outputs, masks)
+        iou_acc = iou_fn(outputs, masks)
         
-#         preds_tensor = torch.tensor(preds, dtype=torch.float32).to(device)
-#         precision = precision_fn(preds_tensor, masks)
-#         recall = recall_fn(preds_tensor, masks)
-#         f1 = f1_fn(preds_tensor, masks)
+        preds_tensor = torch.tensor(preds, dtype=torch.float32).to(device)
+        precision = precision_fn(preds_tensor, masks)
+        recall = recall_fn(preds_tensor, masks)
+        f1 = f1_fn(preds_tensor, masks)
 
-#         running_dice_meter.update(dice_acc.item(), images.size(0))
-#         running_iou_meter.update(iou_acc.item(), images.size(0))
-#         running_precision_meter.update(precision.item(), images.size(0))
-#         running_recall_meter.update(recall.item(), images.size(0))
-#         running_f1_meter.update(f1.item(), images.size(0))
+        running_dice_meter.update(dice_acc.item(), images.size(0))
+        running_iou_meter.update(iou_acc.item(), images.size(0))
+        running_precision_meter.update(precision.item(), images.size(0))
+        running_recall_meter.update(recall.item(), images.size(0))
+        running_f1_meter.update(f1.item(), images.size(0))
 
-#     epoch_loss = running_loss / len(train_loader.dataset)
-#     epoch_acc = running_corrects / total_pixels
-#     epoch_dice = running_dice_meter.avg
-#     epoch_iou = running_iou_meter.avg
-#     epoch_precision = running_precision_meter.avg
-#     epoch_recall = running_recall_meter.avg
-#     epoch_f1 = running_f1_meter.avg
-#     print(f'Epoch [{epoch + 1}/{EPOCHS}], Loss: {epoch_loss:.4f}, Accuracy: {epoch_acc:.4f}, Dice: {epoch_dice:.4f}, IoU: {epoch_iou:.4f}, Precision: {epoch_precision:.4f}, Recall: {epoch_recall:.4f}, F1: {epoch_f1:.4f}')
+    epoch_loss = running_loss / len(train_loader.dataset)
+    epoch_acc = running_corrects / total_pixels
+    epoch_dice = running_dice_meter.avg
+    epoch_iou = running_iou_meter.avg
+    epoch_precision = running_precision_meter.avg
+    epoch_recall = running_recall_meter.avg
+    epoch_f1 = running_f1_meter.avg
+    print(f'Epoch [{epoch + 1}/{EPOCHS}], Loss: {epoch_loss:.4f}, Accuracy: {epoch_acc:.4f}, Dice: {epoch_dice:.4f}, IoU: {epoch_iou:.4f}, Precision: {epoch_precision:.4f}, Recall: {epoch_recall:.4f}, F1: {epoch_f1:.4f}')
 
-#     # Step the learning rate scheduler
-#     scheduler.step()
-#     # scheduler.step(epoch + 1)
+    # Step the learning rate scheduler
+    scheduler.step()
+    # scheduler.step(epoch + 1)
 
-#     # Log the current learning rate to TensorBoard
-#     current_lr = scheduler.get_last_lr()[0]
-#     writer.add_scalar('Learning Rate', current_lr, epoch)
-#     print(f"Current learning rate: {current_lr:.6f}")
+    # Log the current learning rate to TensorBoard
+    current_lr = scheduler.get_last_lr()[0]
+    writer.add_scalar('Learning Rate', current_lr, epoch)
+    print(f"Current learning rate: {current_lr:.6f}")
 
-#     # Log the loss, accuracy, Dice, and IoU to TensorBoard
-#     writer.add_scalar('Dice Loss/train', epoch_loss, epoch)
-#     writer.add_scalar('Accuracy/train', epoch_acc, epoch)
-#     writer.add_scalar('Dice/train', epoch_dice, epoch)
-#     writer.add_scalar('IoU/train', epoch_iou, epoch)
-#     writer.add_scalar('Precision/train', epoch_precision, epoch)
-#     writer.add_scalar('Recall/train', epoch_recall, epoch)
-#     writer.add_scalar('F1/train', epoch_f1, epoch)
+    # Log the loss, accuracy, Dice, and IoU to TensorBoard
+    writer.add_scalar('Dice Loss/train', epoch_loss, epoch)
+    writer.add_scalar('Accuracy/train', epoch_acc, epoch)
+    writer.add_scalar('Dice/train', epoch_dice, epoch)
+    writer.add_scalar('IoU/train', epoch_iou, epoch)
+    writer.add_scalar('Precision/train', epoch_precision, epoch)
+    writer.add_scalar('Recall/train', epoch_recall, epoch)
+    writer.add_scalar('F1/train', epoch_f1, epoch)
 
-#     ############################# VALIDATION ################################
+    ############################# VALIDATION ################################
 
-#     # Validation
-#     unet.eval()
-#     val_loss = 0.0
-#     val_corrects = 0
-#     val_dice_meter.reset()
-#     val_iou_meter.reset()
-#     val_precision_meter.reset()
-#     val_recall_meter.reset()
-#     val_f1_meter.reset()
-#     val_total_pixels = 0
-#     with torch.no_grad():
-#         for images, masks in tqdm(val_loader, desc=f"Validation Epoch {epoch+1}"):
-#             images = images.to(device)
-#             masks = masks.to(device)
-#             outputs = unet(images)
-#             loss = criterion(outputs, masks)
-#             val_loss += loss.item() * images.size(0)
+    # Validation
+    unet.eval()
+    val_loss = 0.0
+    val_corrects = 0
+    val_dice_meter.reset()
+    val_iou_meter.reset()
+    val_precision_meter.reset()
+    val_recall_meter.reset()
+    val_f1_meter.reset()
+    val_total_pixels = 0
+    with torch.no_grad():
+        for images, masks in tqdm(val_loader, desc=f"Validation Epoch {epoch+1}"):
+            images = images.to(device)
+            masks = masks.to(device)
+            outputs = unet(images)
+            loss = criterion(outputs, masks)
+            val_loss += loss.item() * images.size(0)
 
-#             preds = outputs.detach().cpu().numpy()
-#             masks_np = masks.detach().cpu().numpy()
-#             val_corrects += (np.argmax(preds, axis=1) == masks_np).sum()
-#             val_total_pixels += masks_np.size
+            preds = outputs.detach().cpu().numpy()
+            masks_np = masks.detach().cpu().numpy()
+            val_corrects += (np.argmax(preds, axis=1) == masks_np).sum()
+            val_total_pixels += masks_np.size
 
-#             # Calculate metrics
-#             dice_acc = dice_fn(outputs, masks)
-#             iou_acc = iou_fn(outputs, masks)
+            # Calculate metrics
+            dice_acc = dice_fn(outputs, masks)
+            iou_acc = iou_fn(outputs, masks)
 
-#             preds_tensor = torch.tensor(preds, dtype=torch.float32).to(device)
-#             precision = precision_fn(preds_tensor, masks)
-#             recall = recall_fn(preds_tensor, masks)
-#             f1 = f1_fn(preds_tensor, masks)
+            preds_tensor = torch.tensor(preds, dtype=torch.float32).to(device)
+            precision = precision_fn(preds_tensor, masks)
+            recall = recall_fn(preds_tensor, masks)
+            f1 = f1_fn(preds_tensor, masks)
 
-#             val_dice_meter.update(dice_acc.item(), images.size(0))
-#             val_iou_meter.update(iou_acc.item(), images.size(0))
-#             val_precision_meter.update(precision.item(), images.size(0))
-#             val_recall_meter.update(recall.item(), images.size(0))
-#             val_f1_meter.update(f1.item(), images.size(0))
+            val_dice_meter.update(dice_acc.item(), images.size(0))
+            val_iou_meter.update(iou_acc.item(), images.size(0))
+            val_precision_meter.update(precision.item(), images.size(0))
+            val_recall_meter.update(recall.item(), images.size(0))
+            val_f1_meter.update(f1.item(), images.size(0))
 
-#     val_loss /= len(val_loader.dataset)
-#     val_acc = val_corrects / val_total_pixels
-#     val_dice = val_dice_meter.avg
-#     val_iou = val_iou_meter.avg
-#     val_precision = val_precision_meter.avg
-#     val_recall = val_recall_meter.avg
-#     val_f1 = val_f1_meter.avg
+    val_loss /= len(val_loader.dataset)
+    val_acc = val_corrects / val_total_pixels
+    val_dice = val_dice_meter.avg
+    val_iou = val_iou_meter.avg
+    val_precision = val_precision_meter.avg
+    val_recall = val_recall_meter.avg
+    val_f1 = val_f1_meter.avg
     
-#     print(f'Validation Loss: {val_loss:.4f}, Validation Accuracy: {val_acc:.4f}, Validation Dice: {val_dice:.4f}, Validation IoU: {val_iou:.4f}', f'Validation Precision: {val_precision:.4f}, Validation Recall: {val_recall:.4f}, Validation F1: {val_f1:.4f}')
+    print(f'Validation Loss: {val_loss:.4f}, Validation Accuracy: {val_acc:.4f}, Validation Dice: {val_dice:.4f}, Validation IoU: {val_iou:.4f}', f'Validation Precision: {val_precision:.4f}, Validation Recall: {val_recall:.4f}, Validation F1: {val_f1:.4f}')
 
-#     # Log the validation loss, accuracy, Dice, and IoU to TensorBoard
-#     writer.add_scalar('Dice Loss/val', val_loss, epoch)
-#     writer.add_scalar('Accuracy/val', val_acc, epoch)
-#     writer.add_scalar('Dice/val', val_dice, epoch)
-#     writer.add_scalar('IoU/val', val_iou, epoch)
-#     writer.add_scalar('Precision/val', val_precision, epoch)
-#     writer.add_scalar('Recall/val', val_recall, epoch)
-#     writer.add_scalar('F1/val', val_f1, epoch)
+    # Log the validation loss, accuracy, Dice, and IoU to TensorBoard
+    writer.add_scalar('Dice Loss/val', val_loss, epoch)
+    writer.add_scalar('Accuracy/val', val_acc, epoch)
+    writer.add_scalar('Dice/val', val_dice, epoch)
+    writer.add_scalar('IoU/val', val_iou, epoch)
+    writer.add_scalar('Precision/val', val_precision, epoch)
+    writer.add_scalar('Recall/val', val_recall, epoch)
+    writer.add_scalar('F1/val', val_f1, epoch)
 
-#     # Save the best model
-#     if val_loss < best_val_loss:
-#         best_val_loss = val_loss
-#         best_epoch = epoch + 1
+    # Save the best model
+    if val_loss < best_val_loss:
+        best_val_loss = val_loss
+        best_epoch = epoch + 1
 
-#         # Construct the best model path with epoch in the name
-#         best_model_path = os.path.join(models_dir, f'{HYPERPAR}_best_unet_model_at{best_epoch}epochs_{EPOCHS}epochs_{SUBSET}%subset_{config}.pth')
+        # Construct the best model path with epoch in the name
+        best_model_path = os.path.join(models_dir, f'{HYPERPAR}_best_unet_model_at{best_epoch}epochs_{EPOCHS}epochs_{SUBSET}%subset_{config}.pth')
 
-#         # Remove any existing best model file to avoid clutter
-#         for file in os.listdir(models_dir):
-#             if file.startswith(f'{HYPERPAR}_best_unet_model_at') and file.endswith(f'{EPOCHS}epochs_{SUBSET}%subset_{config}.pth'):
-#                 os.remove(os.path.join(models_dir, file))
+        # Remove any existing best model file to avoid clutter
+        for file in os.listdir(models_dir):
+            if file.startswith(f'{HYPERPAR}_best_unet_model_at') and file.endswith(f'{EPOCHS}epochs_{SUBSET}%subset_{config}.pth'):
+                os.remove(os.path.join(models_dir, file))
 
-#         # Save the current best model
-#         torch.save(unet.state_dict(), best_model_path)
-#         print(f"Best model saved with validation loss: {best_val_loss:.4f} at epoch {best_epoch}")
+        # Save the current best model
+        torch.save(unet.state_dict(), best_model_path)
+        print(f"Best model saved with validation loss: {best_val_loss:.4f} at epoch {best_epoch}")
     
-#     # Save model at specific epochs
-#     # if (epoch + 1) in [1, 5, 10, 15, 20, 25, 30, 35, 40, 45, 50]:
-#     #     checkpoint_path = os.path.join(models_dir, f'unet_checkpoint_epoch{epoch + 1}_{config}.pth')
-#     #     torch.save(unet.state_dict(), checkpoint_path)
-#     #     print(f"Checkpoint saved at epoch {epoch + 1} to {checkpoint_path}")
+    # Save model at specific epochs
+    # if (epoch + 1) in [1, 5, 10, 15, 20, 25, 30, 35, 40, 45, 50]:
+    #     checkpoint_path = os.path.join(models_dir, f'unet_checkpoint_epoch{epoch + 1}_{config}.pth')
+    #     torch.save(unet.state_dict(), checkpoint_path)
+    #     print(f"Checkpoint saved at epoch {epoch + 1} to {checkpoint_path}")
 
-#         # We no longer call test_model(checkpoint_path) here to avoid loading from disk.
-#         # If you want to test using the *current in-memory model*:
-#         # test_model_in_memory(unet, device, test_loader, criterion, epoch)
+        # We no longer call test_model(checkpoint_path) here to avoid loading from disk.
+        # If you want to test using the *current in-memory model*:
+        # test_model_in_memory(unet, device, test_loader, criterion, epoch)
     
-#     # NEW: If you want to test on the test set every epoch (in-memory), do it here:
-#     test_model_in_memory(unet, device, test_loader, criterion, epoch)
+    # NEW: If you want to test on the test set every epoch (in-memory), do it here:
+    test_model_in_memory(unet, device, test_loader, criterion, epoch)
 
-# # Save the final U-Net model
-# num_images_str = NUM_IMAGES if NUM_IMAGES is not None else 'all'
-# final_model_path = os.path.join(models_dir, f'{HYPERPAR}_final_unet_model_{EPOCHS}epochs_{SUBSET}%subset_{config}.pth')
-# torch.save(unet.state_dict(), final_model_path)
-# print(f"Final U-Net model saved to {final_model_path}")
+# Save the final U-Net model
+num_images_str = NUM_IMAGES if NUM_IMAGES is not None else 'all'
+final_model_path = os.path.join(models_dir, f'{HYPERPAR}_final_unet_model_{EPOCHS}epochs_{SUBSET}%subset_{config}.pth')
+torch.save(unet.state_dict(), final_model_path)
+print(f"Final U-Net model saved to {final_model_path}")
 
-# # Close the TensorBoard writer
-# writer.close()
+# Close the TensorBoard writer
+writer.close()
 
 ############################# VISUALISATION #############################
 
-final_model_path = "/home/egmelich/SatelliteMAE/Autoencoder_Unet_Sentinel/unetnonpretrained_vis/100_015dropout_coscold_final_unet_model_300epochs_100subset_nopretrain.pth"
+# final_model_path = "/home/egmelich/SatelliteMAE/Autoencoder_Unet_Sentinel/unetnonpretrained_vis/100_015dropout_coscold_final_unet_model_300epochs_100subset_nopretrain.pth"
 # final_model_path = "/home/egmelich/SatelliteMAE/Autoencoder_Unet_Sentinel/unetnonpretrained_vis/100_015dropout_coscold_best_unet_model_at172epochs_300epochs_100subset_nopretrain.pth"
 
 # Load the Unet model
