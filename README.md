@@ -130,7 +130,6 @@ If you use this repository in your research, please cite it using the following 
 @misc{meijling2025wetlandssegmentation,
   author    = {Gmelich Meijling, Eva},
   title     = {AI-Driven Segmentation and Classification of Vegetation in the Biesbosch Floodplain Using Remote Sensing Data},
-  journal   = {Journal of Wetland Remote Sensing},
   year      = {2025},
   url       = {https://github.com/Evameijling/WetlandSemanticSegmentation}
 }
